@@ -1,10 +1,9 @@
 #include "display.h"
+#include <glad/glad.h>
 #include "input.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <GLFW/glfw3.h>
 
 // #############################################################################
 //                           Structs
@@ -29,6 +28,12 @@ void error_callback(int err_code, const char* msg)
 // #############################################################################
 //                           Functions
 // #############################################################################
+#define INIT_DEFER(...)       \
+{                             \
+  PRINTLN(__VA_ARGS__);       \
+  display_free(self);         \
+  return NULL;                \
+}
 Display* display_init(int width, int height, const char* title, bool is_resizable)
 {
   // Init Display
@@ -50,9 +55,7 @@ Display* display_init(int width, int height, const char* title, bool is_resizabl
   // Init glfw
   if (!glfwInit())
   {
-    PRINTLN("Failed to Init GLFW");
-    display_free(self);
-    return NULL;
+    INIT_DEFER("Failed to Init GLFW");
   }
 
   // glfw window hints
@@ -66,9 +69,7 @@ Display* display_init(int width, int height, const char* title, bool is_resizabl
   self->window = glfwCreateWindow(self->width, self->height, self->title, NULL, NULL);
   if (!self->window)
   {
-    PRINTLN("Failed to Create Window");
-    display_free(self);
-    return NULL;
+    INIT_DEFER("Failed to Create Window");
   }
   glfwMakeContextCurrent(self->window);
 
@@ -77,6 +78,12 @@ Display* display_init(int width, int height, const char* title, bool is_resizabl
   glfwSetCursorPosCallback(self->window, _mouse_cursor_pos_callback);
   glfwSetMouseButtonCallback(self->window, _mouse_button_callback);
   glfwSetScrollCallback(self->window, _mouse_scroll_callback);
+
+  // init glad
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
+    INIT_DEFER("Failed to init glad");
+  }
 
   // set v-sync
   glfwSwapInterval(1);

@@ -11,13 +11,20 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
-# Sub Directories
+# sub directories
 add_subdirectory(vendor)
 
+# include directories
 target_include_directories(${PROJECT_NAME} PRIVATE
   include
 )
 
+# packages
+find_package(OPENGL REQUIRED)
+
+# link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
   glfw
+  glad
+  OpenGL::GL
 )
