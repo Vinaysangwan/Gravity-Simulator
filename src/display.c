@@ -1,4 +1,5 @@
 #include "display.h"
+#include "input.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,6 +72,12 @@ Display* display_init(int width, int height, const char* title, bool is_resizabl
   }
   glfwMakeContextCurrent(self->window);
 
+  // set glfw callbacks
+  glfwSetKeyCallback(self->window, _key_callback);
+  glfwSetCursorPosCallback(self->window, _mouse_cursor_pos_callback);
+  glfwSetMouseButtonCallback(self->window, _mouse_button_callback);
+  glfwSetScrollCallback(self->window, _mouse_scroll_callback);
+
   // set v-sync
   glfwSwapInterval(1);
 
@@ -95,14 +102,18 @@ void display_free(Display* self)
   free(self);
 }
 
-void display_poll_events(Display *self)
+void display_update(Display *self)
 {
   glfwPollEvents();
 }
 
 void display_swap_buffers(Display *self)
 {
+  // Swap Buffers
   glfwSwapBuffers(self->window);
+
+  // Input end frame
+  _input_end_frame();
 }
 
 void display_close(Display* self, bool close)

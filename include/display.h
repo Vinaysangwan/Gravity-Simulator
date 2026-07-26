@@ -7,7 +7,7 @@ typedef struct Display Display;
 Display* display_init(int width, int height, const char* title, bool is_resizable);
 void display_free(Display* self);
 
-void display_poll_events(Display* self);
+void display_update(Display* self);
 void display_swap_buffers(Display* self);
 void display_close(Display* self, bool close);
 
